@@ -10,3 +10,4 @@ COPY webapp/target/*.war /usr/local/tomcat/webapps
 # run container
 # docker run -d -p 8085:8080 --name demotomcat-v1 demotomcat:v1
 
+# for proper deployment see file: deploy.sh

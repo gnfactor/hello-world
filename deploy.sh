@@ -12,31 +12,29 @@ export CONTAINER_NAME="$CONTAINER_NAME_PREFIX-$IMAGE_TAG_NEW"
   
 
 echo "INFO: Project DIR:[$CI_PROJECT_DIR]"
-echo "INFO: START BUILDING IMAGE:[$IMAGE_NAME:$IMAGE_TAG_NEW]" && echo
-echo "---------------------------------------------"
+echo "--------------------------------------------------------------"
 ls -hasl
-echo "---------------------------------------------"
+echo "--------------------------------------------------------------"
 docker images
-echo "---------------------------------------------"
+echo "--------------------------------------------------------------"
 
 echo "INFO - REMOVING existing container $CONTAINER_NAME_PREFIX"
-
-docker ps | grep -w "$CONTAINER_NAME_PREFIX" | awk "{print $1}" | xargs docker rm -f &>/dev/null | sleep 0
+docker ps | grep -w $CONTAINER_NAME_PREFIX | awk '{print $1}' | xargs docker rm -f &>/dev/null | sleep 0
 
 echo "INFO - REMOVING existing images $IMAGE_NAME"
+docker rmi $(docker images | grep -w $IMAGE_NAME | awk '{print $3}') &>/dev/null | sleep 0
 
-docker rmi $(docker images | grep -w "$IMAGE_NAME" | awk "{print $3}") &>/dev/null | sleep 0
+echo "INFO: START BUILDING IMAGE:[$IMAGE_NAME:$IMAGE_TAG_NEW]" && echo
+docker build -t $IMAGE_NAME:$IMAGE_TAG_NEW .
 
-docker build -t "$IMAGE_NAME:$IMAGE_TAG_NEW" .
-
-echo "---------------------------------------------"
+echo "--------------------------------------------------------------"
 docker images
-echo "---------------------------------------------"
-echo "INFO - RUN the new container $CONTAINER_NAME" 
+echo "--------------------------------------------------------------"
 
+echo "INFO - RUN the new container $CONTAINER_NAME" 
 docker run -d -p 8085:8080 --name "$CONTAINER_NAME" "$IMAGE_NAME:$IMAGE_TAG_NEW"
 
-echo "---------------------------------------------"
+echo "--------------------------------------------------------------"
 docker ps
 
 
